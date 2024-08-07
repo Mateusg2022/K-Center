@@ -61,7 +61,7 @@ for i in C:
 centers_x = np.array(centers_x) 
 centers_y = np.array(centers_y)
 
-##############################################################################
+#####
 def calculate_solution_radius(points, centers, p):
     max_radius = 0
     for point in points:
@@ -74,14 +74,11 @@ def calculate_solution_radius(points, centers, p):
             max_radius = min_distance
     return max_radius
 
-# Lista de pontos e centros
 points = list(zip(x, y))
 centers = list(zip(centers_x, centers_y))
-
-# Calculando o raio
-radius = calculate_solution_radius(points, centers, 1)  # Usando p=1 para distância Manhattan
+radius = calculate_solution_radius(points, centers, 1)
 print(f"Raio da solução: {radius}")
-##############################################################################
+####
 
 plt.scatter(x, y, label='Pontos')
 plt.scatter(centers_x, centers_y, color='red', label='Centros')
