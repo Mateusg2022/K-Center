@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import random
 
 #função de distância de Minkowski
@@ -18,21 +19,31 @@ def minkowski(p1, p2, p):
   result = np.sum(np.abs(p1-p2) ** p)
   return result ** (1/p) 
 
-num_points = 14
-x = [23,22,13,43,31,17,19,29,47,15,23,35,43,14]
-y = [13,22,16,19,33,39,44,31,29,30,41,47,31,28]
+#######
+df = pd.read_csv('testes/UCI_DF1/ObesityDF.csv')
+x = df['Height']
+y = df['Weight']
+
+#normalização simples usando Min-Max Scaling
+x = (x - x.min()) / (x.max() - x.min())
+y = (y - y.min()) / (y.max() - y.min())
+#######
+
+#num_points = 14
+#x = [23,22,13,43,31,17,19,29,47,15,23,35,43,14]
+#y = [13,22,16,19,33,39,44,31,29,30,41,47,31,28]
 
 used = [False for i in range(0, len(x))]
 
 centers_x = []
 centers_y = []
 
-#tentativa com 3 centros
-k = 3
+#tentativa com 11 centros
+k = 11
 
 # s arbitrario
-#C = [random.randint(0, len(x) - 1)]
-C = [0]
+C = [random.randint(0, len(x) - 1)]
+#C = [0]
 
 #p = 1
 while len(C) < k:
