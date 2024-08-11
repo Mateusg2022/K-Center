@@ -20,7 +20,7 @@ def minkowski(p1, p2, p):
   return result ** (1/p) 
 
 #######
-df = pd.read_csv('testes/UCI_DF1/ObesityDF.csv')
+df = pd.read_csv('UCI_DATA/UCI_DF1/ObesityDF.csv')
 x = df['Height']
 y = df['Weight']
 
@@ -38,8 +38,8 @@ used = [False for i in range(0, len(x))]
 centers_x = []
 centers_y = []
 
-#tentativa com 11 centros
-k = 11
+#tentativa com 4 centros
+k = 4
 
 # s arbitrario
 C = [random.randint(0, len(x) - 1)]

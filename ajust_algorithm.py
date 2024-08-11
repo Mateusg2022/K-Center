@@ -21,7 +21,7 @@ def max_dist(S):
     max_distance = -1
     for i in S:
         for j in S:
-            curr = minkowski(i, j, 1)
+            curr = minkowski(i, j, 2)
             if not np.array_equal(i, j) and curr > max_distance:
                 max_distance = curr
     return max_distance
@@ -30,7 +30,7 @@ def max_dist(S):
 tem q ajustar para o usuario passar o caminho do arquivo como parametro
 '''
 #ler dados do arquivo
-filename = 'samples/samples1_circle.txt'
+filename = 'sintetic_samples/dataset_sigma1.5_set5.txt'
 data = np.loadtxt(filename)
 
 x = data[:, 0]
@@ -45,19 +45,21 @@ y = (y - y.min()) / (y.max() - y.min())
 #inicialização
 k = 3
 rmax = max_dist(data)
-left, right = 0, rmax
-
+left = 0
+right = rmax
+print('rmax:', rmax)
+C = []
 #enquanto os L e R nao convergirem para valores proximos
-while abs(left - right) > 0:
+while abs(left - right) > 0.00001:
     r = (left + right) / 2
     C = []
     S = data.copy()
     
-    while len(S) > 0:
+    while len(S) > 0 and len(C) < k:
       s = random.randint(0, len(S) - 1)
       C.append(S[s])
       
-      to_remove = [p for p in range(len(S)) if minkowski(S[p], S[s], 1) <= 2 * r]
+      to_remove = [p for p in range(len(S)) if minkowski(S[p], S[s], 2) <= 2 * r]
       S = np.delete(S, to_remove, axis=0)
     
     if len(C) <= k:
@@ -83,7 +85,7 @@ def calculate_solution_radius(points, centers, p):
 
 points = list(zip(x, y))
 centers = list(zip(centers_x, centers_y))
-radius = calculate_solution_radius(points, centers, 1)
+radius = calculate_solution_radius(points, centers, 2)
 print(f"Raio da solução: {radius}")
 
 #atribuir cores diferentes aos pontos de cada cluster
@@ -93,7 +95,7 @@ def assign_clusters(points, centers):
         min_distance = float('inf')
         cluster_label = -1
         for i, center in enumerate(centers):
-            dist = minkowski(point, center, 1)
+            dist = minkowski(point, center, 2)
             if dist < min_distance:
                 min_distance = dist
                 cluster_label = i

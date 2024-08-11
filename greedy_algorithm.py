@@ -20,15 +20,15 @@ def minkowski(p1, p2, p):
     return result ** (1 / p)
 
 #ler dados do arquivo
-filename = 'samples/samples1_circle.txt'
+filename = 'sintetic_samples/dataset_sigma1.5_set6.txt'
 data = np.loadtxt(filename)
 
 x = data[:, 0]
 y = data[:, 1]
 
 #normalização usando Min-Max Scaling
-x = (x - x.min()) / (x.max() - x.min())
-y = (y - y.min()) / (y.max() - y.min())
+#x = (x - x.min()) / (x.max() - x.min())
+#y = (y - y.min()) / (y.max() - y.min())
 
 #inicialização
 used = [False for _ in range(len(x))]
@@ -50,7 +50,7 @@ while len(C) < k:
             continue
         min_dist = float('inf')
         for j in C:
-            dist = minkowski([x[i], y[i]], [x[j], y[j]], 1)
+            dist = minkowski([x[i], y[i]], [x[j], y[j]], 2)
             if dist < min_dist:
                 min_dist = dist
         #procurando a maior distância entre um ponto e seu centro mais próximo
@@ -83,7 +83,7 @@ def calculate_solution_radius(points, centers, p):
 
 points = list(zip(x, y))
 centers = list(zip(centers_x, centers_y))
-radius = calculate_solution_radius(points, centers, 1)
+radius = calculate_solution_radius(points, centers, 2)
 print(f"Raio da solução: {radius}")
 
 #atribuir cores diferentes aos pontos de cada cluster
@@ -93,7 +93,7 @@ def assign_clusters(points, centers):
         min_distance = float('inf')
         cluster_label = -1
         for i, center in enumerate(centers):
-            dist = minkowski(point, center, 1)
+            dist = minkowski(point, center, 2)
             if dist < min_distance:
                 min_distance = dist
                 cluster_label = i
