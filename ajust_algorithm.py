@@ -30,7 +30,7 @@ def max_dist(S):
 tem q ajustar para o usuario passar o caminho do arquivo como parametro
 '''
 #ler dados do arquivo
-filename = 'sintetic_samples/dataset_sigma1.5_set5.txt'
+filename = 'sintetic_samples/sample1_sqtd0.5.txt'
 data = np.loadtxt(filename)
 
 x = data[:, 0]
