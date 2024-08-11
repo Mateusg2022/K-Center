@@ -6,7 +6,7 @@ df = pd.read_csv('testes/UCI_DF3/ObesityDF.csv')
 #print(df.info())
 #print(df.columns)
 
-#df_int = df[[2, 3]]
+#df_int = df[['Height', 'Weight']]
 
 ##print(df_int.info())
 #

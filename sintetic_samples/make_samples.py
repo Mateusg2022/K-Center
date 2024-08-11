@@ -16,7 +16,7 @@ def generate_data(centers, num_points, std_dev):
   return np.vstack(data)
 
 k = 5  #define o numero de centros
-num_points_foreach_center = 100 #quantos pontos terao ao redor de cada centro
+num_points_foreach_center = 1000 #quantos pontos terao ao redor de cada centro
 std_devs = [0.5, 1.5, 3.0] #muda o desvio padrao para controlar a sobreposiçao dos pontos
 
 centers = np.random.uniform(-10, 10, size=(k, 2))
@@ -24,7 +24,12 @@ centers = np.random.uniform(-10, 10, size=(k, 2))
 #pra cada std gera 4 amostras
 for std_dev in std_devs:
   for i in range(4):
-    data = generate_data(centers, num_points_foreach_center, std_dev)
+    if std_dev == 0.5:
+      data = generate_data(centers, num_points_foreach_center, std_dev)
+    elif std_dev == 1.5:
+      data = generate_data(centers, 2*num_points_foreach_center, std_dev)
+    else:
+      data = generate_data(centers, 3*num_points_foreach_center, std_dev)
     
     filename = f"sintetic_samples/sample{i+1}_sqtd{std_dev}.txt"
     np.savetxt(filename, data, fmt="%.4f")

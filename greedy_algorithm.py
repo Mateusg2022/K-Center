@@ -20,7 +20,7 @@ def minkowski(p1, p2, p):
     return result ** (1 / p)
 
 #ler dados do arquivo
-filename = 'sintetic_samples/dataset_sigma1.5_set6.txt'
+filename = 'samples/sample_moons2.txt'
 data = np.loadtxt(filename)
 
 x = data[:, 0]
@@ -36,7 +36,7 @@ centers_x = []
 centers_y = []
 
 #tentativa com 2 centros
-k = 3
+k = 2
 
 #escolher o primeiro centro arbitrariamente
 C = [random.randint(0, len(x) - 1)]
