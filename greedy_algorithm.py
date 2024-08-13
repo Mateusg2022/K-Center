@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import random
+from sklearn.metrics import silhouette_score, adjusted_rand_score
 
 ##############################################
 #PSEUDO-CÓDIGO
@@ -20,7 +21,7 @@ def minkowski(p1, p2, p):
     return result ** (1 / p)
 
 #ler dados do arquivo
-filename = 'samples/sample_moons2.txt'
+filename = 'samples/sample_blobs1.txt'
 data = np.loadtxt(filename)
 
 x = data[:, 0]
@@ -36,7 +37,7 @@ centers_x = []
 centers_y = []
 
 #tentativa com 2 centros
-k = 2
+k = 3
 
 #escolher o primeiro centro arbitrariamente
 C = [random.randint(0, len(x) - 1)]
@@ -101,6 +102,10 @@ def assign_clusters(points, centers):
     return np.array(labels)
 
 labels = assign_clusters(points, centers)
+
+#silhueta
+silhouette_avg = silhouette_score(data, labels)
+print(f"Coeficiente de Silhueta: {silhouette_avg}")
 
 #plot
 plt.figure(figsize=(8, 6))
