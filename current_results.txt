@@ -1,0 +1,2 @@
+FileName, p_value, k_value, algorithm, radius, time, silhueta, k-Means_radius
+samples/sample_blobs1.txt, 2, 3, greedy, 4.7549, 0.0024, 0.5323, 3.3995

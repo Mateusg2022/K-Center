@@ -3,14 +3,15 @@ import numpy as np
 import random
 from sklearn.metrics import silhouette_score, adjusted_rand_score
 
-#------------------------------------------
-#• Seja S’ = S; C = ∅
-#• Enquanto S’ ≠ ∅
-#•   Selecione arbitrariamente um ponto s ∈ S’ e coloque-o em C
-#•   Remova de S’ todos os pontos que estiverem a uma distância máxima de 2r de s
-#• Se |C| ≤ k, retorne C
-#• Senão, não há solução
-#------------------------------------------
+##############################################
+#PSEUDO-CÓDIGO
+#Se k ≥ |S|, retorne S
+#• Senão, selecione s arbitrário e crie C={s}
+#• Enquanto |C| < k
+#•  Selecione s que maximize dist(s,C)
+#•  Adicione s a C
+#• Retorne C
+##############################################
 
 #função de distância de Minkowski
 def minkowski(p1, p2, p):
@@ -19,58 +20,54 @@ def minkowski(p1, p2, p):
     result = np.sum(np.abs(p1 - p2) ** p)
     return result ** (1 / p)
 
-def max_dist(S):
-    max_distance = -1
-    for i in S:
-        for j in S:
-            curr = minkowski(i, j, 2)
-            if not np.array_equal(i, j) and curr > max_distance:
-                max_distance = curr
-    return max_distance
-
-'''
-tem q ajustar para o usuario passar o caminho do arquivo como parametro
-'''
 #ler dados do arquivo
-filename = 'sintetic_samples/sample1_sqtd0.5.txt'
+filename = 'samples/sample_blobs1.txt'
 data = np.loadtxt(filename)
 
 x = data[:, 0]
 y = data[:, 1]
 
-'''
 #normalização usando Min-Max Scaling
-x = (x - x.min()) / (x.max() - x.min())
-y = (y - y.min()) / (y.max() - y.min())
-'''
+#x = (x - x.min()) / (x.max() - x.min())
+#y = (y - y.min()) / (y.max() - y.min())
 
 #inicialização
-k = 3
-rmax = max_dist(data)
-left = 0
-right = rmax
-print('rmax:', rmax)
-C = []
-#enquanto os L e R nao convergirem para valores proximos
-while abs(left - right) > 0.00001:
-    r = (left + right) / 2
-    C = []
-    S = data.copy()
-    
-    while len(S) > 0 and len(C) < k:
-      s = random.randint(0, len(S) - 1)
-      C.append(S[s])
-      
-      to_remove = [p for p in range(len(S)) if minkowski(S[p], S[s], 2) <= 2 * r]
-      S = np.delete(S, to_remove, axis=0)
-    
-    if len(C) <= k:
-      right = r
-    else:
-      left = r
+used = [False for _ in range(len(x))]
+centers_x = []
+centers_y = []
 
-centers_x = [center[0] for center in C]
-centers_y = [center[1] for center in C]
+#tentativa com 2 centros
+k = 3
+
+#escolher o primeiro centro arbitrariamente
+C = [random.randint(0, len(x) - 1)]
+
+#algoritmo guloso de k-centros 2-aproximado (segundo algoritmo ensinado)
+while len(C) < k:
+    s = -1
+    max_dist = -1
+    for i in range(len(x)):
+        if used[i]:
+            continue
+        min_dist = float('inf')
+        for j in C:
+            dist = minkowski([x[i], y[i]], [x[j], y[j]], 2)
+            if dist < min_dist:
+                min_dist = dist
+        #procurando a maior distância entre um ponto e seu centro mais próximo
+        if min_dist > max_dist:
+            max_dist = min_dist
+            s = i
+    #quando encontrar, salva
+    C.append(s)
+    used[s] = True
+
+for i in C:
+    centers_x.append(x[i])
+    centers_y.append(y[i])
+
+centers_x = np.array(centers_x)
+centers_y = np.array(centers_y)
 
 #calcula o raio da solução
 def calculate_solution_radius(points, centers, p):
@@ -110,7 +107,7 @@ labels = assign_clusters(points, centers)
 silhouette_avg = silhouette_score(data, labels)
 print(f"Coeficiente de Silhueta: {silhouette_avg}")
 
-
+#plot
 plt.figure(figsize=(8, 6))
 scatter = plt.scatter(x, y, c=labels, cmap='viridis', edgecolor='k')
 plt.scatter(centers_x, centers_y, color='red', marker='x', s=100, label='Centros')
@@ -120,4 +117,5 @@ plt.xlabel('Feature 1')
 plt.ylabel('Feature 2')
 plt.legend()
 plt.colorbar(scatter, label='Cluster ID')
+
 plt.show()

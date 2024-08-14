@@ -1,8 +1,7 @@
-import matplotlib.pyplot as plt
 import numpy as np
 import random
-from sklearn.metrics import silhouette_score, adjusted_rand_score
-
+import time
+from sklearn.metrics import silhouette_score
 ##############################################
 #PSEUDO-CÓDIGO
 #Se k ≥ |S|, retorne S
@@ -20,38 +19,66 @@ def minkowski(p1, p2, p):
     result = np.sum(np.abs(p1 - p2) ** p)
     return result ** (1 / p)
 
-#ler dados do arquivo
-filename = 'samples/sample_blobs1.txt'
-data = np.loadtxt(filename)
+def load_distance_matrix(filename):
+    matrix = np.loadtxt(filename)
+    if matrix.shape[0] != matrix.shape[1]:
+        raise ValueError("A matriz de distâncias deve ser quadrada.")
+    return matrix
 
-x = data[:, 0]
-y = data[:, 1]
+def calculate_solution_radius(distance_matrix, centers):
+    max_radius = 0
+    for i in range(distance_matrix.shape[0]):
+        min_distance = float('inf')
+        for center in centers:
+            dist = distance_matrix[i][center]
+            if dist < min_distance:
+                min_distance = dist
+        if min_distance > max_radius:
+            max_radius = min_distance
+    return max_radius
 
+def assign_clusters(distance_matrix, centers):
+    labels = []
+    for i in range(distance_matrix.shape[0]):
+        min_distance = float('inf')
+        cluster_label = -1
+        for j, center in enumerate(centers):
+            dist = distance_matrix[i][center]
+            if dist < min_distance:
+                min_distance = dist
+                cluster_label = j
+        labels.append(cluster_label)
+    return np.array(labels)
+
+dist_matrix_file = 'save_dist_matrix.txt'
+distance_matrix = load_distance_matrix(dist_matrix_file)
 #normalização usando Min-Max Scaling
 #x = (x - x.min()) / (x.max() - x.min())
 #y = (y - y.min()) / (y.max() - y.min())
 
-#inicialização
-used = [False for _ in range(len(x))]
-centers_x = []
-centers_y = []
+filename = 'samples/sample_blobs1.txt'
+p_value = 2
+k_value = 3
+algorithm = 'greedy'
 
-#tentativa com 2 centros
-k = 3
+used = [False] * distance_matrix.shape[0]
+centers = []
 
 #escolher o primeiro centro arbitrariamente
-C = [random.randint(0, len(x) - 1)]
+centers.append(random.randint(0, distance_matrix.shape[0] - 1))
+
+start_time = time.time()
 
 #algoritmo guloso de k-centros 2-aproximado (segundo algoritmo ensinado)
-while len(C) < k:
+while len(centers) < k_value:
     s = -1
     max_dist = -1
-    for i in range(len(x)):
+    for i in range(distance_matrix.shape[0]):
         if used[i]:
             continue
         min_dist = float('inf')
-        for j in C:
-            dist = minkowski([x[i], y[i]], [x[j], y[j]], 2)
+        for center in centers:
+            dist = distance_matrix[i][center]
             if dist < min_dist:
                 min_dist = dist
         #procurando a maior distância entre um ponto e seu centro mais próximo
@@ -59,63 +86,23 @@ while len(C) < k:
             max_dist = min_dist
             s = i
     #quando encontrar, salva
-    C.append(s)
+    centers.append(s)
     used[s] = True
 
-for i in C:
-    centers_x.append(x[i])
-    centers_y.append(y[i])
+radius = calculate_solution_radius(distance_matrix, centers)
+end_time = time.time()
 
-centers_x = np.array(centers_x)
-centers_y = np.array(centers_y)
+labels = assign_clusters(distance_matrix, centers)
 
-#calcula o raio da solução
-def calculate_solution_radius(points, centers, p):
-    max_radius = 0
-    for point in points:
-        min_distance = float('inf')
-        for center in centers:
-            dist = minkowski(point, center, p)
-            if dist < min_distance:
-                min_distance = dist
-        if min_distance > max_radius:
-            max_radius = min_distance
-    return max_radius
+if distance_matrix.shape[0] == len(labels):
+    silhouette_avg = silhouette_score(distance_matrix, labels, metric='precomputed')
+else:
+    silhouette_avg = -1
+    print("Erro: A matriz de distâncias e os rótulos não possuem o mesmo tamanho.")
 
-points = list(zip(x, y))
-centers = list(zip(centers_x, centers_y))
-radius = calculate_solution_radius(points, centers, 2)
-print(f"Raio da solução: {radius}")
+time_taken = end_time - start_time
 
-#atribuir cores diferentes aos pontos de cada cluster
-def assign_clusters(points, centers):
-    labels = []
-    for point in points:
-        min_distance = float('inf')
-        cluster_label = -1
-        for i, center in enumerate(centers):
-            dist = minkowski(point, center, 2)
-            if dist < min_distance:
-                min_distance = dist
-                cluster_label = i
-        labels.append(cluster_label)
-    return np.array(labels)
+with open('current_results.txt', 'a') as file:
+    file.write(f"{filename}, {p_value}, {k_value}, {algorithm}, {radius:.4f}, {time_taken:.4f}, {silhouette_avg:.4f}\n")
 
-labels = assign_clusters(points, centers)
-
-#silhueta
-silhouette_avg = silhouette_score(data, labels)
-print(f"Coeficiente de Silhueta: {silhouette_avg}")
-
-#plot
-plt.figure(figsize=(8, 6))
-scatter = plt.scatter(x, y, c=labels, cmap='viridis', edgecolor='k')
-plt.scatter(centers_x, centers_y, color='red', marker='x', s=100, label='Centros')
-
-plt.title('Clusters e Centros')
-plt.xlabel('Feature 1')
-plt.ylabel('Feature 2')
-plt.legend()
-plt.colorbar(scatter, label='Cluster ID')
-
-plt.show()
+print(f"Resultados salvos em 'results.txt'.")
