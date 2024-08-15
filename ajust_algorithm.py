@@ -91,26 +91,27 @@ tem q ajustar para o usuario passar o caminho do arquivo como parametro
 #ler dados do arquivo
 
 percentList=[0.01, 0.03, 0.05, 0.08, 0.16]
-currBase = 5
-filePrefix = f"sintetic_samples/sample{currBase}"
+currBase = "varied2"
+filePrefix = f"sklearn_samples"
 
-filename = filePrefix + f'/sample{currBase}_sqtd1.5.txt' 
+filename = filePrefix + f'/sample_{currBase}.txt' 
+
+centersNum = np.loadtxt(filename, usecols=(2))
+# Contar o número de valores únicos
+num_unique_labels = len(np.unique(centersNum))
+kValue = num_unique_labels 
+
 trueLabels = np.loadtxt(filename, usecols=(2)) #Pegar so as colunas das coordenadas X e Y
 data = np.loadtxt(filename)
 
 x = data[:, 0]
 y = data[:, 1]
 
-# dist_matrix_file = f'save_dist_matrix_sample_UCIDF{currBase}_P{pValue}.txt'
-# distance_matrix = load_distance_matrix(dist_matrix_file)
-
-filename = filePrefix + '/nCentros.txt' 
-kValue = np.loadtxt(filename)
 for pvalordoscrias in [1, 2]: #Rodando pros dois p
     rmax = max_dist(data[:,:2], pvalordoscrias)
 
     for percent in percentList:
-        with open(f'results_sintetic_sample{currBase}_p{pvalordoscrias}_percent{percent}.txt', 'a') as file:
+        with open(f'results_sklearn_{currBase}_p{pvalordoscrias}_percent{percent}.txt', 'a') as file:
             file.write(f"FileName, p_value, k_value, algorithm, radius, time, silhueta, rand_score_value, k-Means_radius, k-Means_elapsedTime\n")
 
         for i in range(0, 29):
@@ -167,9 +168,9 @@ for pvalordoscrias in [1, 2]: #Rodando pros dois p
 
             time_taken = end_time - start_time
 
-            (kMeansRadius, elapsed_time) = KMeans.KmeansResult(filePrefix + f'/sample{currBase}_sqtd1.5.txt', int(kValue))
+            (kMeansRadius, elapsed_time) = KMeans.KmeansResult(filename, int(kValue))
 
-            with open(f'results_sintetic_sample{currBase}_p{pvalordoscrias}_percent{percent}.txt', 'a') as file:
+            with open(f'results_sklearn_{currBase}_p{pvalordoscrias}_percent{percent}.txt', 'a') as file:
                 file.write(f"{filename}, {pvalordoscrias}, {kValue}, {algorithm}, {radius:.4f}, {time_taken:.4f}, {silhouette_avg:.4f}, {rand_score_value:.4f}, {kMeansRadius:.4f}, {elapsed_time:.4f}\n")
 
 
