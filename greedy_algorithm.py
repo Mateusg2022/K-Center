@@ -1,6 +1,7 @@
 import numpy as np
 import random
 import time
+import KMeans 
 from sklearn.metrics import silhouette_score, adjusted_rand_score
 ##############################################
 #PSEUDO-CÓDIGO
@@ -50,62 +51,85 @@ def assign_clusters(distance_matrix, centers):
         labels.append(cluster_label)
     return np.array(labels)
 
-dist_matrix_file = 'save_dist_matrix.txt'
-distance_matrix = load_distance_matrix(dist_matrix_file)
-#normalização usando Min-Max Scaling
-#x = (x - x.min()) / (x.max() - x.min())
-#y = (y - y.min()) / (y.max() - y.min())
-
-filename = 'samples/sample_blobs1.txt'
+currSample = 'varied2'
 p_value = 2
-k_value = 3
-algorithm = 'greedy'
+# std_devs = [0.5, 1.5, 3.0]
 
-used = [False] * distance_matrix.shape[0]
-centers = []
+# for ndamais in std_devs:
+dist_matrix_file = f'save_dist_matrix_sample_{currSample}_P{p_value}.txt'
 
-#escolher o primeiro centro arbitrariamente
-centers.append(random.randint(0, distance_matrix.shape[0] - 1))
+distance_matrix = load_distance_matrix(dist_matrix_file)
 
-start_time = time.time()
+filePrefix = f"sklearn_samples"
+filename = filePrefix + '/nCentros.txt' 
+#antes era isso aqui: kValue = np.loadtxt(filename)
+#mas no do sklearn eu esqueci de pegar a quant de centros direto
+#ai faço isso aq
+getCenters = filePrefix + f'/sample_{currSample}.txt' 
+centersNum = np.loadtxt(getCenters, usecols=(2))
+# Contar o número de valores únicos
+num_unique_labels = len(np.unique(centersNum))
+kValue = num_unique_labels 
 
-#algoritmo guloso de k-centros 2-aproximado (segundo algoritmo ensinado)
-while len(centers) < k_value:
-    s = -1
-    max_dist = -1
-    for i in range(distance_matrix.shape[0]):
-        if used[i]:
-            continue
-        min_dist = float('inf')
-        for center in centers:
-            dist = distance_matrix[i][center]
-            if dist < min_dist:
-                min_dist = dist
-        #procurando a maior distância entre um ponto e seu centro mais próximo
-        if min_dist > max_dist:
-            max_dist = min_dist
-            s = i
-    #quando encontrar, salva
-    centers.append(s)
-    used[s] = True
+with open(f'results_sample_{currSample}_p{p_value}.txt', 'a') as file:
+    file.write(f"FileName, p_value, k_value, algorithm, radius, time, silhueta, rand_score_value, k-Means_radius, k-Means_elapsedTime\n")
 
-radius = calculate_solution_radius(distance_matrix, centers)
-end_time = time.time()
+for i in range(0, 29):
+    k_value = kValue
+    algorithm = 'greedy'
 
-labels = assign_clusters(distance_matrix, centers)
+    used = [False] * distance_matrix.shape[0]
+    centers = []
 
-#labels true = label original (lendo direto do arquivo de texto na terceira coluna)
-#rand_score_value = adjusted_rand_score(trueLabels, labels)
+    #escolher o primeiro centro arbitrariamente
+    centers.append(random.randint(0, distance_matrix.shape[0] - 1))
 
-if distance_matrix.shape[0] == len(labels):
-    silhouette_avg = silhouette_score(distance_matrix, labels, metric='precomputed')
-else:
-    silhouette_avg = -1
-    print("Erro: A matriz de distâncias e os rótulos não possuem o mesmo tamanho.")
+    start_time = time.time()
 
-time_taken = end_time - start_time
+    #algoritmo guloso de k-centros 2-aproximado (segundo algoritmo ensinado)
+    while len(centers) < k_value:
+        s = -1
+        max_dist = -1
+        for i in range(distance_matrix.shape[0]):
+            if used[i]:
+                continue
+            min_dist = float('inf')
+            for center in centers:
+                dist = distance_matrix[i][center]
+                if dist < min_dist:
+                    min_dist = dist
+            #procurando a maior distância entre um ponto e seu centro mais próximo
+            if min_dist > max_dist:
+                max_dist = min_dist
+                s = i
+        #quando encontrar, salva
+        centers.append(s)
+        used[s] = True
 
-with open('current_results.txt', 'a') as file:
-    file.write(f"{filename}, {p_value}, {k_value}, {algorithm}, {radius:.4f}, {time_taken:.4f}, {silhouette_avg:.4f}\n")
+    radius = calculate_solution_radius(distance_matrix, centers)
+    end_time = time.time()
 
-print(f"Resultados salvos em 'results.txt'.")
+    labels = assign_clusters(distance_matrix, centers)
+
+    filename = filePrefix + f'/sample_{currSample}.txt' 
+    trueLabels = np.loadtxt(filename, usecols=(2)) #Pegar so as colunas das coordenadas X e Y
+    rand_score_value = adjusted_rand_score(trueLabels, labels)
+
+    if distance_matrix.shape[0] == len(labels):
+        silhouette_avg = silhouette_score(distance_matrix, labels, metric='precomputed')
+    else:
+        silhouette_avg = -1
+        print("Erro: A matriz de distâncias e os rótulos não possuem o mesmo tamanho.")
+
+    time_taken = end_time - start_time
+
+    (kMeansRadius, elapsed_time) = KMeans.KmeansResult(filename, int(kValue))
+
+    with open('current_results.txt', 'a') as file:
+        file.write(f"{filename}, {p_value}, {k_value}, {algorithm}, {radius:.4f}, {time_taken:.4f}, {silhouette_avg:.4f}, {rand_score_value:.4f}, {kMeansRadius:.4f}, {elapsed_time:.4f}\n")
+
+    with open(f'results_sample_{currSample}_p{p_value}.txt', 'a') as file:
+        file.write(f"{filename}, {p_value}, {k_value}, {algorithm}, {radius:.4f}, {time_taken:.4f}, {silhouette_avg:.4f}, {rand_score_value:.4f}, {kMeansRadius:.4f}, {elapsed_time:.4f}\n")
+
+print("Quantidade de valores diferentes em 'label':", num_unique_labels)
+# print(f"Resultados salvos em 'current_results.txt'.")

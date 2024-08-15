@@ -3,14 +3,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from ucimlrepo import fetch_ucirepo 
-#https://archive.ics.uci.edu/dataset/172/ozone+level+detection]
+#https://archive.ics.uci.edu/dataset/890/aids+clinical+trials+group+study+175
 # fetch dataset 
-ozone_level_detection = fetch_ucirepo(id=172) 
+  
+# fetch dataset 
+aids_clinical_trials_group_study_175 = fetch_ucirepo(id=890) 
   
 # data (as pandas dataframes) 
-x = ozone_level_detection.data.features.WSR1
-y = ozone_level_detection.data.features.WSR2
-label = ozone_level_detection.data.targets
+label = aids_clinical_trials_group_study_175.data.targets 
+x = aids_clinical_trials_group_study_175.data.features.wtkg
+y = aids_clinical_trials_group_study_175.data.features.age
 
 if isinstance(label, pd.DataFrame):
     label = label.squeeze()  # Converter DataFrame para Series se necessário
@@ -27,11 +29,14 @@ print(label_numeric)
 num_unique_labels = label.nunique()
 print("Quantidade de valores diferentes em 'label':", num_unique_labels)
 # # metadata 
+print(len(x))
+print(len(y))
 # print(estimation_of_obesity_levels_based_on_eating_habits_and_physical_condition.metadata) 
 with open('resultado.txt', 'w') as file:
 # Iterando sobre as listas/arrays simultaneamente
     for i in range(len(x)):
     # Escrevendo no arquivo com o formato desejado
+        pass
         file.write(f"{x[i]} {y[i]} {label_numeric[i]}\n")
         
 plt.scatter(x, y, label='Pontos', s=4)
