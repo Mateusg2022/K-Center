@@ -91,7 +91,7 @@ tem q ajustar para o usuario passar o caminho do arquivo como parametro
 #ler dados do arquivo
 
 percentList=[0.01, 0.03, 0.05, 0.08, 0.16]
-currBase = 2
+currBase = 5
 filePrefix = f"sintetic_samples/sample{currBase}"
 
 filename = filePrefix + f'/sample{currBase}_sqtd1.5.txt' 
