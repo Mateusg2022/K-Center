@@ -12,12 +12,12 @@ def minkowski(p1, p2, p):
 
 # std_devs = [0.5, 1.5, 3.0]
 
-currSample = "varied2"
+currSample = 4
 # for i in std_devs:
-prefixFileName = 'sklearn_samples' 
+prefixFileName = f'UCI_DATA/UCI_DF{currSample}' 
 for h in [1, 2]:
     # for k in std_devs:
-        filename = f'{prefixFileName}/sample_{currSample}.txt'
+        filename = f'{prefixFileName}/resultado.txt'
 
         data = np.loadtxt(filename, usecols=(0, 1)) #Pegar so as colunas das coordenadas X e Y
         p = h #valor de p
@@ -29,4 +29,23 @@ for h in [1, 2]:
             for j in range(num_points):
                 distance_matrix[i, j] = minkowski(data[i], data[j], p)
 
-        np.savetxt(f'save_dist_matrix_sample_{currSample}_P{p}.txt', distance_matrix, fmt='%.4f')
+        np.savetxt(f'save_dist_matrix_sample_UCIDF{currSample}_P{p}.txt', distance_matrix, fmt='%.4f')
+
+# currSample = "varied2"
+# # for i in std_devs:
+# prefixFileName = 'sklearn_samples' 
+# for h in [1, 2]:
+#     # for k in std_devs:
+#         filename = f'{prefixFileName}/sample_{currSample}.txt'
+
+#         data = np.loadtxt(filename, usecols=(0, 1)) #Pegar so as colunas das coordenadas X e Y
+#         p = h #valor de p
+
+#         num_points = data.shape[0]
+#         distance_matrix = np.zeros((num_points, num_points))
+
+#         for i in range(num_points):
+#             for j in range(num_points):
+#                 distance_matrix[i, j] = minkowski(data[i], data[j], p)
+
+#         np.savetxt(f'save_dist_matrix_sample_{currSample}_P{p}.txt', distance_matrix, fmt='%.4f')
