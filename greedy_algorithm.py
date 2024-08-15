@@ -1,7 +1,7 @@
 import numpy as np
 import random
 import time
-from sklearn.metrics import silhouette_score
+from sklearn.metrics import silhouette_score, adjusted_rand_score
 ##############################################
 #PSEUDO-CÓDIGO
 #Se k ≥ |S|, retorne S
@@ -93,6 +93,9 @@ radius = calculate_solution_radius(distance_matrix, centers)
 end_time = time.time()
 
 labels = assign_clusters(distance_matrix, centers)
+
+#labels true = label original (lendo direto do arquivo de texto na terceira coluna)
+#rand_score_value = adjusted_rand_score(trueLabels, labels)
 
 if distance_matrix.shape[0] == len(labels):
     silhouette_avg = silhouette_score(distance_matrix, labels, metric='precomputed')

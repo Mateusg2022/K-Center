@@ -46,13 +46,15 @@ y = (y - y.min()) / (y.max() - y.min())
 
 #inicialização
 k = 3
+r = float('inf')
 rmax = max_dist(data)
 left = 0
 right = rmax
 print('rmax:', rmax)
+percent = 0.00001
 C = []
 #enquanto os L e R nao convergirem para valores proximos
-while abs(left - right) > 0.00001:
+while r / rmax > percent:
     r = (left + right) / 2
     C = []
     S = data.copy()
