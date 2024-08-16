@@ -5,16 +5,6 @@ import time
 def load_data(filename):
     return np.loadtxt(filename)
 
-# def calculate_solution_radius(X, centers, labels):
-#     max_radius = 0
-#     for i in range(len(centers)):
-#         cluster_points = X[labels == i]
-#         center = centers[i]
-#         max_dist = np.max([np.linalg.norm(point - center) for point in cluster_points])
-#         if max_dist > max_radius:
-#             max_radius = max_dist
-#     return max_radius
-
 def calculate_cluster_radii(points, labels, cluster_centers):
     radii = []
     for i, center in enumerate(cluster_centers):

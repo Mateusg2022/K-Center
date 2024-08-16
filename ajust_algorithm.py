@@ -61,35 +61,6 @@ def calculate_solution_radius(points, centers, pvalordoscrias):
             max_radius = min_distance
     return max_radius
 
-# def calculate_solution_radius(distance_matrix, centers):
-#     max_radius = 0
-#     for i in range(distance_matrix.shape[0]):
-#         min_distance = float('inf')
-#         for center in centers:
-#             dist = distance_matrix[i][center]
-#             if dist < min_distance:
-#                 min_distance = dist
-#         if min_distance > max_radius:
-#             max_radius = min_distance
-#     return max_radius
-
-# def calculate_solution_radius(distance_matrix, centers):
-#     max_radius = 0
-#     for i in range(distance_matrix.shape[0]):
-#         min_distance = float('inf')
-#         for center in centers:
-#             dist = distance_matrix[i][center]
-#             if dist < min_distance:
-#                 min_distance = dist
-#         if min_distance > max_radius:
-#             max_radius = min_distance
-#     return max_radius
-    
-'''
-tem q ajustar para o usuario passar o caminho do arquivo como parametro
-'''
-#ler dados do arquivo
-
 percentList=[0.01, 0.03, 0.05, 0.08, 0.16]
 currBase = "varied2"
 filePrefix = f"sklearn_samples"
@@ -153,13 +124,11 @@ for pvalordoscrias in [1, 2]: #Rodando pros dois p
             radius = calculate_solution_radius(points, centers, pvalordoscrias)
             print(f"Raio da solução: {radius}")
 
-            #atribuir cores diferentes aos pontos de cada cluster
             end_time = time.time()
 
             labels = assign_clusters(points, centers, pvalordoscrias)
 
             #indice de rand
-
             rand_score_value = adjusted_rand_score(trueLabels, labels)
 
             #silhueta
@@ -172,37 +141,3 @@ for pvalordoscrias in [1, 2]: #Rodando pros dois p
 
             with open(f'results_sklearn_{currBase}_p{pvalordoscrias}_percent{percent}.txt', 'a') as file:
                 file.write(f"{filename}, {pvalordoscrias}, {kValue}, {algorithm}, {radius:.4f}, {time_taken:.4f}, {silhouette_avg:.4f}, {rand_score_value:.4f}, {kMeansRadius:.4f}, {elapsed_time:.4f}\n")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# plt.figure(figsize=(8, 6))
-# scatter = plt.scatter(x, y, c=labels, cmap='viridis', edgecolor='k')
-# plt.scatter(centers_x, centers_y, color='red', marker='x', s=100, label='Centros')
-
-# plt.title('Clusters e Centros')
-# plt.xlabel('Feature 1')
-# plt.ylabel('Feature 2')
-# plt.legend()
-# plt.colorbar(scatter, label='Cluster ID')
-# plt.show()

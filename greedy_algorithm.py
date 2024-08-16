@@ -55,16 +55,13 @@ currSample = 'varied2'
 p_value = 2
 # std_devs = [0.5, 1.5, 3.0]
 
-# for ndamais in std_devs:
 dist_matrix_file = f'save_dist_matrix_sample_{currSample}_P{p_value}.txt'
 
 distance_matrix = load_distance_matrix(dist_matrix_file)
 
 filePrefix = f"sklearn_samples"
 filename = filePrefix + '/nCentros.txt' 
-#antes era isso aqui: kValue = np.loadtxt(filename)
-#mas no do sklearn eu esqueci de pegar a quant de centros direto
-#ai faço isso aq
+
 getCenters = filePrefix + f'/sample_{currSample}.txt' 
 centersNum = np.loadtxt(getCenters, usecols=(2))
 # Contar o número de valores únicos
@@ -132,4 +129,3 @@ for i in range(0, 29):
         file.write(f"{filename}, {p_value}, {k_value}, {algorithm}, {radius:.4f}, {time_taken:.4f}, {silhouette_avg:.4f}, {rand_score_value:.4f}, {kMeansRadius:.4f}, {elapsed_time:.4f}\n")
 
 print("Quantidade de valores diferentes em 'label':", num_unique_labels)
-# print(f"Resultados salvos em 'current_results.txt'.")
